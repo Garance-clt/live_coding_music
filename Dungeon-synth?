@@ -1,0 +1,78 @@
+use_bpm 60
+
+
+live_loop :intro do
+  use_synth :dark_ambience
+  play :d3, attack: 8, release: 12, amp: 0.4
+  sleep 4
+  play :a3, attack: 8, release: 12, amp: 0.4
+  sleep 4
+end
+
+# atmosphere
+live_loop :nappes, sync: :intro do
+  use_synth :prophet
+  with_fx :reverb, room: 1 do
+    play chord(:d3, :minor7), attack: 4, release: 8, cutoff: rrand(60, 90), amp: 0.5
+    sleep 8
+    play chord(:a3, :minor7), attack: 4, release: 8, cutoff: rrand(60, 90), amp: 0.5
+    sleep 8
+  end
+end
+
+# Mélodie
+live_loop :melodie, sync: :nappes do
+  use_synth :pulse
+  with_fx :echo, phase: 0.5, decay: 6 do
+    notes = [
+      [:d4, :f4, :a4, :g4, :e4, :c4, :d4],
+      [:f4, :a4, :c5, :b4, :g4, :d4, :f4],
+      [:e4, :g4, :b4, :a4, :f4, :c4, :e4]
+    ]
+    
+    2.times do
+      notes[0].each { |n| play n, release: 0.8, attack: 0.2, amp: 0.8; sleep 0.75 }
+    end
+    1.times do  # Variation
+      notes[1].each { |n| play n, release: 0.8, attack: 0.2, amp: 0.8; sleep 0.75 }
+    end
+    1.times do
+      notes[2].each { |n| play n, release: 0.8, attack: 0.2, amp: 0.8; sleep 0.75 }
+    end
+  end
+end
+
+# Arpèges
+live_loop :arp, sync: :melodie do
+  use_synth :pluck
+  with_fx :echo, phase: 0.25, decay: 4 do
+    play_pattern_timed [:d5, :f5, :a5, :g5, :e5], [0.5], release: 1, amp: 0.4
+  end
+  sleep 4
+end
+
+# Basse
+live_loop :basse, sync: :melodie do
+  use_synth :fm
+  with_fx :distortion, distort: 0.3 do
+    play :d2, attack: 1, release: 6, amp: 0.6
+    sleep 8
+    play :a2, attack: 1, release: 6, amp: 0.6
+    sleep 8
+  end
+end
+
+# Outro
+live_loop :outro, sync: :melodie do
+  sleep 64
+  use_synth :dark_ambience
+  with_fx :reverb, room: 1 do
+    3.times do
+      play :d4, attack: 6, release: 12, amp: 0.3
+      sleep 16
+      play :a4, attack: 6, release: 12, amp: 0.3
+      sleep 16
+    end
+  end
+  stop
+end
